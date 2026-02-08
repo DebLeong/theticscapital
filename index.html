@@ -36,6 +36,11 @@
     html {
       scroll-behavior: smooth;
     }
+
+    /* Minimalist icon styling */
+    i[data-lucide] {
+      stroke-width: 1.5;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-white text-gray-900">
@@ -56,27 +61,27 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="pt-32 pb-20 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight">
+  <section class="pt-40 pb-32 px-6">
+    <div class="max-w-5xl mx-auto text-center">
+      <h1 class="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]">
         The AI hedge fund<br>
-        <span class="text-gray-500">that actually reads</span>
+        <span class="text-gray-400">that actually reads</span>
       </h1>
 
-      <p class="text-xl md:text-2xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+      <p class="text-xl md:text-2xl text-gray-600 mb-16 max-w-3xl mx-auto leading-relaxed font-light">
         Most AI funds trade on price patterns. We read every 10-K, 10-Q, and 8-K filing.
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <a
           href="#waitlist"
-          class="px-8 py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+          class="px-10 py-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-all"
         >
-          Join the Waitlist
+          Join Waitlist
         </a>
         <a
           href="#how-it-works"
-          class="px-8 py-4 border border-gray-300 rounded-lg font-medium hover:border-gray-900 transition-colors"
+          class="px-10 py-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:border-black hover:bg-gray-50 transition-all"
         >
           How It Works
         </a>
@@ -85,38 +90,38 @@
   </section>
 
   <!-- Problem Section -->
-  <section class="py-20 px-6 bg-gray-50">
+  <section class="py-32 px-6">
     <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4">
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
           The Problem with AI Investing
         </h2>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        <p class="text-xl text-gray-500 max-w-2xl mx-auto font-light">
           Today's AI funds are sophisticated calculators, not readers
         </p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-8 rounded-xl border border-gray-200">
-          <div class="mb-4"><i data-lucide="trending-up" class="w-10 h-10 text-gray-400"></i></div>
+      <div class="grid md:grid-cols-3 gap-12">
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="trending-up" class="w-12 h-12 text-gray-300"></i></div>
           <h3 class="text-xl font-semibold mb-3">Quant Funds</h3>
-          <p class="text-gray-600">
+          <p class="text-gray-500 font-light leading-relaxed">
             Trade on price patterns and technical indicators. Fast, but blind to fundamentals.
           </p>
         </div>
 
-        <div class="bg-white p-8 rounded-xl border border-gray-200">
-          <div class="mb-4"><i data-lucide="bot" class="w-10 h-10 text-gray-400"></i></div>
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="bot" class="w-12 h-12 text-gray-300"></i></div>
           <h3 class="text-xl font-semibold mb-3">AI Trading Bots</h3>
-          <p class="text-gray-600">
+          <p class="text-gray-500 font-light leading-relaxed">
             Process sentiment from news and social media. Noisy signals, no depth.
           </p>
         </div>
 
-        <div class="bg-white p-8 rounded-xl border border-gray-200">
-          <div class="mb-4"><i data-lucide="briefcase" class="w-10 h-10 text-gray-400"></i></div>
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="briefcase" class="w-12 h-12 text-gray-300"></i></div>
           <h3 class="text-xl font-semibold mb-3">Traditional Funds</h3>
-          <p class="text-gray-600">
+          <p class="text-gray-500 font-light leading-relaxed">
             Analysts read filings deeply, but can't scale beyond 20-30 companies.
           </p>
         </div>
@@ -124,53 +129,106 @@
     </div>
   </section>
 
+  <!-- What We Don't Do Section -->
+  <section class="py-32 px-6 bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-20">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+          What We Don't Do
+        </h2>
+        <p class="text-xl text-gray-500 max-w-2xl mx-auto font-light">
+          We intentionally ignore the noise. Signal over spin.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-12 mb-16">
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="mic" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-3 flex items-center justify-center gap-2">
+            <i data-lucide="x" class="w-5 h-5 text-red-500"></i> Earnings Calls
+          </h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            Scripted presentations and softball questions. Management spin, not ground truth.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="newspaper" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-3 flex items-center justify-center gap-2">
+            <i data-lucide="x" class="w-5 h-5 text-red-500"></i> News & Social
+          </h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            Sentiment from headlines and Twitter. High noise, low signal, backward-looking.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="bar-chart-3" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-3 flex items-center justify-center gap-2">
+            <i data-lucide="x" class="w-5 h-5 text-red-500"></i> Price Action
+          </h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            Technical patterns and momentum. Past performance doesn't predict fundamentals.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-3xl mx-auto bg-black text-white rounded-2xl p-12 text-center">
+        <p class="text-2xl font-light mb-4">
+          Instead, we read what companies are legally required to disclose.
+        </p>
+        <p class="text-lg text-gray-400 font-light">
+          SEC filings are sworn documents filed under penalty of law. No spin. No noise. Just facts.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Solution Section -->
-  <section class="py-20 px-6">
+  <section class="py-32 px-6">
     <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
         We do the homework no one else can
       </h2>
-      <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+      <p class="text-xl text-gray-500 mb-20 max-w-3xl mx-auto font-light leading-relaxed">
         Our AI reads every word of every SEC filing for 500+ companies.
         Then it invests with the conviction of a fundamental analyst.
       </p>
 
-      <div class="bg-gray-50 rounded-2xl p-8 md:p-12 text-left">
-        <div class="space-y-6">
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0 w-12 h-12 bg-gray-900 text-white rounded-lg flex items-center justify-center font-bold">
-              1
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2">Deep Reading</h3>
-              <p class="text-gray-600">
-                Extract KPIs, risks, and management commentary from MD&A sections. Track 18+ XBRL concepts across 10 years.
-              </p>
-            </div>
+      <div class="space-y-16 text-left max-w-2xl mx-auto">
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0 w-10 h-10 border-2 border-black rounded-full flex items-center justify-center font-semibold text-sm">
+            1
           </div>
-
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0 w-12 h-12 bg-gray-900 text-white rounded-lg flex items-center justify-center font-bold">
-              2
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2">Pattern Detection</h3>
-              <p class="text-gray-600">
-                Identify gaps between risk factors and MD&A. Track insider transactions. Monitor disclosure changes.
-              </p>
-            </div>
+          <div>
+            <h3 class="font-semibold text-xl mb-3">Deep Reading</h3>
+            <p class="text-gray-500 font-light leading-relaxed">
+              Extract KPIs, risks, and management commentary from MD&A sections. Track 18+ XBRL concepts across 10 years.
+            </p>
           </div>
+        </div>
 
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0 w-12 h-12 bg-gray-900 text-white rounded-lg flex items-center justify-center font-bold">
-              3
-            </div>
-            <div>
-              <h3 class="font-semibold text-lg mb-2">Conviction Investing</h3>
-              <p class="text-gray-600">
-                Pick 20-30 high-conviction stocks based on fundamental quality, not momentum. Hold for years, not minutes.
-              </p>
-            </div>
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0 w-10 h-10 border-2 border-black rounded-full flex items-center justify-center font-semibold text-sm">
+            2
+          </div>
+          <div>
+            <h3 class="font-semibold text-xl mb-3">Pattern Detection</h3>
+            <p class="text-gray-500 font-light leading-relaxed">
+              Identify gaps between risk factors and MD&A. Track insider transactions. Monitor disclosure changes.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-6">
+          <div class="flex-shrink-0 w-10 h-10 border-2 border-black rounded-full flex items-center justify-center font-semibold text-sm">
+            3
+          </div>
+          <div>
+            <h3 class="font-semibold text-xl mb-3">Conviction Investing</h3>
+            <p class="text-gray-500 font-light leading-relaxed">
+              Pick 20-30 high-conviction stocks based on fundamental quality, not momentum. Hold for years, not minutes.
+            </p>
           </div>
         </div>
       </div>
@@ -178,141 +236,134 @@
   </section>
 
   <!-- Stats Section -->
-  <section class="py-20 px-6 bg-gray-50">
-    <div class="max-w-6xl mx-auto">
-      <div class="grid md:grid-cols-3 gap-12 text-center">
+  <section class="py-32 px-6 bg-gray-50">
+    <div class="max-w-5xl mx-auto">
+      <div class="grid md:grid-cols-3 gap-16 text-center">
         <div>
-          <div class="text-5xl font-bold mb-2">500+</div>
-          <div class="text-gray-600">Companies Indexed</div>
+          <div class="text-6xl font-bold mb-4 tracking-tight">500+</div>
+          <div class="text-gray-500 font-light">Companies Indexed</div>
         </div>
         <div>
-          <div class="text-5xl font-bold mb-2">4,500+</div>
-          <div class="text-gray-600">SEC Filings Read</div>
+          <div class="text-6xl font-bold mb-4 tracking-tight">4,500+</div>
+          <div class="text-gray-500 font-light">SEC Filings Read</div>
         </div>
         <div>
-          <div class="text-5xl font-bold mb-2">10yr</div>
-          <div class="text-gray-600">Historical Depth</div>
+          <div class="text-6xl font-bold mb-4 tracking-tight">10yr</div>
+          <div class="text-gray-500 font-light">Historical Depth</div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- How It Works -->
-  <section id="how-it-works" class="py-20 px-6">
+  <section id="how-it-works" class="py-32 px-6">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold text-center mb-20 tracking-tight">
         Our Unfair Advantage
       </h2>
 
-      <div class="space-y-12">
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0"><i data-lucide="database" class="w-8 h-8 text-gray-400"></i></div>
-          <div>
-            <h3 class="text-xl font-semibold mb-2">Complete SEC Filing Database</h3>
-            <p class="text-gray-600">
-              We've indexed every 10-K, 10-Q, 8-K, and DEF 14A for the S&P 500. XBRL data + raw HTML + AI extraction = complete picture.
-            </p>
-          </div>
+      <div class="grid md:grid-cols-2 gap-16">
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="database" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-4">Complete SEC Filing Database</h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            Every 10-K, 10-Q, 8-K, and DEF 14A for the S&P 500. XBRL data + raw HTML + AI extraction.
+          </p>
         </div>
 
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0"><i data-lucide="brain" class="w-8 h-8 text-gray-400"></i></div>
-          <div>
-            <h3 class="text-xl font-semibold mb-2">Custom-Trained LLMs</h3>
-            <p class="text-gray-600">
-              Our models are fine-tuned to extract KPIs, detect red flags, and identify management tone shifts. Temperature = 0.0 for strict grounding.
-            </p>
-          </div>
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="brain" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-4">Custom-Trained LLMs</h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            Fine-tuned to extract KPIs, detect red flags, and identify tone shifts. Temperature = 0.0 for strict grounding.
+          </p>
         </div>
 
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0"><i data-lucide="network" class="w-8 h-8 text-gray-400"></i></div>
-          <div>
-            <h3 class="text-xl font-semibold mb-2">Graph RAG Architecture</h3>
-            <p class="text-gray-600">
-              Connect companies through supply chains, board members, investors, and peers. See relationships other funds miss.
-            </p>
-          </div>
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="network" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-4">Graph RAG Architecture</h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            Connect companies through supply chains, board members, investors, and peers.
+          </p>
         </div>
 
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0"><i data-lucide="zap" class="w-8 h-8 text-gray-400"></i></div>
-          <div>
-            <h3 class="text-xl font-semibold mb-2">Real-Time Monitoring</h3>
-            <p class="text-gray-600">
-              New 8-K filed? Insider transaction? Proxy statement? We read it within hours and update our thesis.
-            </p>
-          </div>
+        <div class="text-center">
+          <div class="mb-6 flex justify-center"><i data-lucide="zap" class="w-12 h-12 text-gray-300"></i></div>
+          <h3 class="text-xl font-semibold mb-4">Real-Time Monitoring</h3>
+          <p class="text-gray-500 font-light leading-relaxed">
+            New filing? We read it within hours and update our thesis instantly.
+          </p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Social Proof -->
-  <section class="py-20 px-6 bg-gray-50">
+  <section class="py-32 px-6 bg-gray-50">
     <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
         Built by investors, for investors
       </h2>
-      <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+      <p class="text-xl text-gray-500 mb-16 max-w-3xl mx-auto font-light leading-relaxed">
         We're not a team of quants who've never read a 10-K. We're fundamental analysts who got tired of manually reading 200-page filings.
       </p>
 
-      <div class="bg-white rounded-xl p-8 border border-gray-200 text-left max-w-2xl mx-auto">
-        <p class="text-gray-600 italic mb-4">
+      <div class="bg-white rounded-2xl p-12 border border-gray-200 text-left max-w-3xl mx-auto">
+        <p class="text-gray-600 text-2xl font-light mb-6 leading-relaxed">
           "Warren Buffett reads every word of every annual report. But he can only deeply analyze ~20 companies. What if you could do that for 500 companies?"
         </p>
-        <div class="font-semibold">— Founding Team</div>
+        <div class="font-semibold text-sm tracking-wide uppercase text-gray-400">Founding Team</div>
       </div>
     </div>
   </section>
 
   <!-- Waitlist -->
-  <section id="waitlist" class="py-20 px-6">
-    <div class="max-w-2xl mx-auto text-center">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6">
+  <section id="waitlist" class="py-32 px-6">
+    <div class="max-w-xl mx-auto text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
         Join the Waitlist
       </h2>
-      <p class="text-xl text-gray-600 mb-8">
-        We're launching our first fund in Q2 2026. Early waitlist members get priority access.
+      <p class="text-xl text-gray-500 mb-12 font-light">
+        Launching Q2 2026. Early members get priority access.
       </p>
 
-      <form id="waitlistForm" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+      <form id="waitlistForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
         <input
           type="email"
+          name="email"
           id="emailInput"
           placeholder="your@email.com"
           required
-          class="flex-1 px-6 py-4 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-900"
+          class="flex-1 px-6 py-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
         />
         <button
           type="submit"
-          class="px-8 py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+          class="px-10 py-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-all"
         >
-          Join Waitlist
+          Join
         </button>
       </form>
 
-      <p id="successMessage" class="mt-4 text-green-600 font-medium hidden">
-        ✓ You're on the list! We'll be in touch soon.
+      <p id="successMessage" class="mt-6 text-green-600 font-medium hidden">
+        ✓ You're on the list
       </p>
 
-      <p class="mt-6 text-sm text-gray-500">
-        No spam. Unsubscribe anytime. We respect your inbox.
+      <p class="mt-8 text-sm text-gray-400 font-light">
+        No spam. Unsubscribe anytime.
       </p>
     </div>
   </section>
 
   <!-- Footer -->
-  <footer class="border-t border-gray-200 py-12 px-6">
+  <footer class="border-t border-gray-100 py-16 px-6">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="text-sm text-gray-600">
-        © 2026 Thetics Capital. All rights reserved.
+      <div class="text-sm text-gray-400 font-light">
+        © 2026 Thetics Capital
       </div>
-      <div class="flex gap-6 text-sm text-gray-600">
-        <a href="#" class="hover:text-gray-900 transition-colors">Privacy</a>
-        <a href="#" class="hover:text-gray-900 transition-colors">Terms</a>
-        <a href="mailto:hello@theticscapital.com" class="hover:text-gray-900 transition-colors">
+      <div class="flex gap-8 text-sm text-gray-400 font-light">
+        <a href="#" class="hover:text-black transition-colors">Privacy</a>
+        <a href="#" class="hover:text-black transition-colors">Terms</a>
+        <a href="mailto:hello@theticscapital.com" class="hover:text-black transition-colors">
           Contact
         </a>
       </div>
@@ -323,27 +374,52 @@
     // Initialize Lucide icons
     lucide.createIcons();
 
-    // Waitlist form handling
-    document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+    // Waitlist form handling with Formspree
+    document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
+      const form = e.target;
       const email = document.getElementById('emailInput').value;
       const successMessage = document.getElementById('successMessage');
+      const submitButton = form.querySelector('button[type="submit"]');
 
-      // TODO: Connect to your email collection service (Mailchimp, ConvertKit, etc.)
-      // For now, just show success message and log to console
-      console.log('Waitlist signup:', email);
+      // Disable button during submission
+      submitButton.disabled = true;
+      submitButton.textContent = 'Joining...';
 
-      // Show success message
-      successMessage.classList.remove('hidden');
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
 
-      // Clear form
-      document.getElementById('emailInput').value = '';
+        if (response.ok) {
+          // Show success message
+          successMessage.classList.remove('hidden');
 
-      // Hide success message after 5 seconds
-      setTimeout(() => {
-        successMessage.classList.add('hidden');
-      }, 5000);
+          // Clear form
+          document.getElementById('emailInput').value = '';
+
+          // Reset button
+          submitButton.textContent = 'Join';
+          submitButton.disabled = false;
+
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            successMessage.classList.add('hidden');
+          }, 5000);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+        submitButton.textContent = 'Join';
+        submitButton.disabled = false;
+      }
     });
   </script>
 
