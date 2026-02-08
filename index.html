@@ -42,6 +42,15 @@
     i[data-lucide] {
       stroke-width: 1.5;
     }
+
+    /* Quote rotation animation */
+    #rotatingQuote {
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    #rotatingQuote.fade {
+      opacity: 0;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-white text-gray-900">
@@ -345,7 +354,7 @@
     // Initialize Lucide icons
     lucide.createIcons();
 
-    // Rotating quotes
+    // Rotating quotes with animation
     const quotes = [
       "A human analyst covers 20 companies. Ours covers 500 and never sleeps.",
       "Reading between the lines used to take a career. Now it takes seconds.",
@@ -354,9 +363,28 @@
       "Wall Street reads the filings. Now you can too."
     ];
 
-    // Pick a random quote on page load
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    document.getElementById('rotatingQuote').textContent = randomQuote;
+    let currentQuoteIndex = 0;
+    const quoteElement = document.getElementById('rotatingQuote');
+
+    function rotateQuote() {
+      // Fade out
+      quoteElement.classList.add('fade');
+
+      setTimeout(() => {
+        // Change text
+        currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+        quoteElement.textContent = quotes[currentQuoteIndex];
+
+        // Fade in
+        quoteElement.classList.remove('fade');
+      }, 800); // Match CSS transition duration
+    }
+
+    // Set initial quote
+    quoteElement.textContent = quotes[0];
+
+    // Rotate every 5 seconds
+    setInterval(rotateQuote, 5000);
 
     // Waitlist form handling with Formspree
     document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
