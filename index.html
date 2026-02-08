@@ -280,8 +280,7 @@
         </p>
 
         <div class="bg-white rounded-2xl p-12 border border-gray-200 text-left max-w-3xl mx-auto">
-          <p class="text-gray-600 text-2xl font-light mb-6 leading-relaxed">
-            "Warren Buffett reads every word of every annual report. But he can only deeply analyze ~20 companies. What if you could do that for 500 companies?"
+          <p id="rotatingQuote" class="text-gray-600 text-2xl font-light mb-6 leading-relaxed">
           </p>
           <div class="font-semibold text-sm tracking-wide uppercase text-gray-400">Founding Team</div>
         </div>
@@ -345,6 +344,19 @@
   <script>
     // Initialize Lucide icons
     lucide.createIcons();
+
+    // Rotating quotes
+    const quotes = [
+      "A human analyst covers 20 companies. Ours covers 500 and never sleeps.",
+      "Reading between the lines used to take a career. Now it takes seconds.",
+      "Deep analysis used to require decades of experience. Now it requires AI.",
+      "You shouldn't need a team of analysts to know which companies are actually good.",
+      "Wall Street reads the filings. Now you can too."
+    ];
+
+    // Pick a random quote on page load
+    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    document.getElementById('rotatingQuote').textContent = randomQuote;
 
     // Waitlist form handling with Formspree
     document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
