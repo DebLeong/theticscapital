@@ -19,7 +19,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -36,6 +36,18 @@
 
     html {
       scroll-behavior: smooth;
+    }
+
+    /* Serif for headings - editorial feel */
+    h1, h2, h3 {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Refined body text */
+    p {
+      letter-spacing: -0.01em;
     }
 
     /* Minimalist icon styling */
@@ -71,14 +83,14 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="pt-40 pb-32 px-6">
-    <div class="max-w-5xl mx-auto text-center">
-      <h1 class="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]">
+  <section class="pt-48 pb-40 px-6">
+    <div class="max-w-4xl mx-auto text-center">
+      <h1 class="text-5xl md:text-7xl mb-10 leading-[1.15]">
         The AI hedge fund<br>
-        <span class="text-gray-400">that actually reads.</span>
+        <span class="text-gray-500">that actually reads.</span>
       </h1>
 
-      <p class="text-xl md:text-2xl text-gray-600 mb-16 max-w-3xl mx-auto leading-relaxed font-light">
+      <p class="text-xl md:text-2xl text-gray-600 mb-16 max-w-2xl mx-auto leading-[1.6]">
         Every filing. Every footnote. Every company. So you know which ones are actually worth owning.
       </p>
 
@@ -100,13 +112,13 @@
   </section>
 
   <!-- Why Thetics -->
-  <section class="py-32 px-6 bg-gray-50">
-    <div class="max-w-3xl mx-auto">
-      <h2 class="text-4xl md:text-5xl font-bold mb-12 tracking-tight text-center">
+  <section class="py-40 px-6 bg-gray-50">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-4xl md:text-5xl mb-16 text-center">
         Why "Thetics"?
       </h2>
 
-      <div class="space-y-8 text-lg text-gray-600 font-light leading-relaxed">
+      <div class="space-y-10 text-lg text-gray-700 leading-[1.8]">
         <p>
           Take <em class="italic text-gray-900 font-normal">aesthetics</em>. Strip away the obvious. <strong class="font-semibold text-gray-900">What's left is us.</strong>
         </p>
@@ -127,13 +139,13 @@
   </section>
 
   <!-- Problem Section -->
-  <section class="py-32 px-6">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-20">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+  <section class="py-40 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-24">
+        <h2 class="text-4xl md:text-5xl mb-6">
           The Problem with AI Investing
         </h2>
-        <p class="text-xl text-gray-500 max-w-2xl mx-auto font-light">
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-[1.6]">
           Today's AI funds are sophisticated calculators, not readers
         </p>
       </div>
@@ -167,12 +179,12 @@
   </section>
 
   <!-- Solution Section -->
-  <section class="py-32 px-6">
+  <section class="py-40 px-6">
     <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+      <h2 class="text-4xl md:text-5xl mb-8">
         We do the homework no one else can
       </h2>
-      <p class="text-xl text-gray-500 mb-20 max-w-3xl mx-auto font-light leading-relaxed">
+      <p class="text-xl text-gray-600 mb-24 max-w-2xl mx-auto leading-[1.7]">
         Our AI reads every word of every SEC filing for 500+ companies.
         Then it invests with the conviction of a fundamental analyst.
       </p>
@@ -218,9 +230,9 @@
   </section>
 
   <!-- How It Works -->
-  <section id="how-it-works" class="py-32 px-6">
+  <section id="how-it-works" class="py-40 px-6">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-4xl md:text-5xl font-bold text-center mb-20 tracking-tight">
+      <h2 class="text-4xl md:text-5xl text-center mb-24">
         Our Unfair Advantage
       </h2>
 
@@ -261,35 +273,35 @@
   </section>
 
   <!-- Stats & Social Proof -->
-  <section class="py-32 px-6 bg-gray-50">
-    <div class="max-w-6xl mx-auto">
+  <section class="py-40 px-6 bg-gray-50">
+    <div class="max-w-5xl mx-auto">
       <!-- Stats -->
-      <div class="grid md:grid-cols-3 gap-16 text-center mb-24">
+      <div class="grid md:grid-cols-3 gap-20 text-center mb-32">
         <div>
-          <div class="text-6xl font-bold mb-4 tracking-tight">500+</div>
-          <div class="text-gray-500 font-light">Companies Indexed</div>
+          <div class="text-6xl mb-4" style="font-family: 'Crimson Pro', serif;">500+</div>
+          <div class="text-gray-600 text-sm uppercase tracking-wider">Companies Indexed</div>
         </div>
         <div>
-          <div class="text-6xl font-bold mb-4 tracking-tight">4,500+</div>
-          <div class="text-gray-500 font-light">SEC Filings Read</div>
+          <div class="text-6xl mb-4" style="font-family: 'Crimson Pro', serif;">4,500+</div>
+          <div class="text-gray-600 text-sm uppercase tracking-wider">SEC Filings Read</div>
         </div>
         <div>
-          <div class="text-6xl font-bold mb-4 tracking-tight">10yr</div>
-          <div class="text-gray-500 font-light">Historical Depth</div>
+          <div class="text-6xl mb-4" style="font-family: 'Crimson Pro', serif;">10yr</div>
+          <div class="text-gray-600 text-sm uppercase tracking-wider">Historical Depth</div>
         </div>
       </div>
 
       <!-- Social Proof -->
-      <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-4xl md:text-5xl mb-8">
           Built by investors, for investors
         </h2>
-        <p class="text-xl text-gray-500 mb-16 max-w-3xl mx-auto font-light leading-relaxed">
+        <p class="text-xl text-gray-600 mb-20 max-w-2xl mx-auto leading-[1.7]">
           We're not a team of quants who've never read a 10-K. We're fundamental analysts who got tired of manually reading 200-page filings.
         </p>
 
-        <div class="bg-white rounded-2xl p-12 border border-gray-200 text-left max-w-3xl mx-auto">
-          <p id="rotatingQuote" class="text-gray-600 text-2xl font-light mb-6 leading-relaxed">
+        <div class="bg-white rounded-2xl p-12 border border-gray-200 text-left max-w-2xl mx-auto">
+          <p id="rotatingQuote" class="text-gray-700 text-xl leading-[1.8]">
           </p>
           <div class="font-semibold text-sm tracking-wide uppercase text-gray-400">Founding Team</div>
         </div>
@@ -298,12 +310,12 @@
   </section>
 
   <!-- Waitlist -->
-  <section id="waitlist" class="py-32 px-6">
+  <section id="waitlist" class="py-40 px-6">
     <div class="max-w-xl mx-auto text-center">
-      <h2 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">
+      <h2 class="text-4xl md:text-5xl mb-8">
         Join the Waitlist
       </h2>
-      <p class="text-xl text-gray-500 mb-12 font-light">
+      <p class="text-xl text-gray-600 mb-12 leading-[1.7]">
         Launching Q2 2026. Early members get priority access.
       </p>
 
