@@ -12,8 +12,6 @@ Landing page and marketing materials for **Thetics Capital** - "The AI hedge fun
 
 ## Positioning
 
-**Target**: YC W26 application, early investors, beta users
-
 **Core Message**:
 - Most AI funds trade on price patterns
 - We read every SEC filing (10-K, 10-Q, 8-K)
