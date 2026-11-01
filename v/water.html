@@ -55,7 +55,7 @@
   #water {
     position: fixed; inset: 0; z-index: 1; pointer-events: none;
     width: 100%; height: 100%;
-    opacity: 1.0;
+    opacity: .6;
     mask-image: radial-gradient(ellipse 60% 42% at 50% 52%, transparent 0%, transparent 35%, rgba(0,0,0,.95) 75%),
                 linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
     -webkit-mask-image: radial-gradient(ellipse 60% 42% at 50% 52%, transparent 0%, transparent 35%, rgba(0,0,0,.95) 75%),
@@ -352,7 +352,7 @@
     + '           + texture(src,v+vec2(0.,texel.y)).r + texture(src,v-vec2(0.,texel.y)).r - 4.*c.r;\n'
     + '  float hn = (2.*c.r - c.g + 0.25*lap) * 0.992;\n'
     + '  vec2 px = v / texel;\n'
-    + '  if (drop.z != 0.) hn += drop.z * exp(-dot(px - drop.xy, px - drop.xy) / 81.);\n'
+    + '  if (drop.z != 0.) hn += drop.z * exp(-dot(px - drop.xy, px - drop.xy) / 36.);\n'
     + '  if (wake.z != 0.) hn += wake.z * exp(-dot(px - wake.xy, px - wake.xy) / 9.);\n'
     + '  o = vec2(hn, c.r);\n'
     + '}';
@@ -367,7 +367,7 @@
     + '  vec3 L = normalize(vec3(-0.35, -0.55, 1.));\n'
     + '  float spec = pow(max(dot(n, L), 0.), 40.) * 0.6;\n'
     + '  vec3 col = mix(vec3(0.40,0.82,0.90), vec3(0.85,0.98,1.0), spec);\n'
-    + '  float a = smoothstep(0.006, 0.02, gm) * 0.85;\n'
+    + '  float a = smoothstep(0.004, 0.009, gm) * 0.55;\n'
     + '  o = vec4(min(col, vec3(1.)), a);\n'
     + '}';
 
@@ -386,7 +386,7 @@
   }
 
   var stepP, drawP, simW = 0, simH = 0, fb = [], tex = [], src = 0;
-  var nextDrop = 1.5, pend = null, ptr = { x: -1e9, y: -1e9, on: false }, raf = null;
+  var nextDrop = 1.5, lastDrop = -9, pend = null, ptr = { x: -1e9, y: -1e9, on: false }, raf = null;
 
   function target() {
     var t = gl.createTexture();
@@ -408,8 +408,8 @@
   }
 
   function build() {
-    simW = Math.min(960, Math.ceil(window.innerWidth / 2));
-    simH = Math.ceil(window.innerHeight / 2);
+    simW = Math.min(1280, Math.ceil(window.innerWidth / 1.5));
+    simH = Math.ceil(window.innerHeight / 1.5);
     canvas.width = Math.ceil(window.innerWidth * Math.min(window.devicePixelRatio || 1, 2));
     canvas.height = Math.ceil(window.innerHeight * Math.min(window.devicePixelRatio || 1, 2));
     canvas.style.width = window.innerWidth + 'px';
@@ -436,7 +436,7 @@
     gl.uniform2f(gl.getUniformLocation(stepP, 'texel'), 1 / simW, 1 / simH);
     if (pend) { gl.uniform3f(gl.getUniformLocation(stepP, 'drop'), pend[0], pend[1], pend[2]); pend = null; }
     else gl.uniform3f(gl.getUniformLocation(stepP, 'drop'), 0, 0, 0);
-    if (ptr.on && !reduced) gl.uniform3f(gl.getUniformLocation(stepP, 'wake'), ptr.x, ptr.y, 0.12);
+    if (ptr.on && !reduced) gl.uniform3f(gl.getUniformLocation(stepP, 'wake'), ptr.x, ptr.y, 0.03);
     else gl.uniform3f(gl.getUniformLocation(stepP, 'wake'), 0, 0, 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     src = dst;
@@ -456,12 +456,12 @@
 
   function frame(tms) {
     var t = tms / 1000;
-    if (t >= nextDrop) {
+    if (t >= nextDrop && t - lastDrop >= 6) {
       var x, y, tries = 0;
       do { x = Math.random() * simW; y = Math.random() * simH; } while (!outsideHeadline(x, y) && ++tries < 20);
-      pend = [x, y, 0.45];
-      nextDrop = t + 7 + Math.random() * 4;
-    }
+      pend = [x, y, 0.14];
+      lastDrop = t; nextDrop = t + 9 + Math.random() * 5;
+    } else if (t >= nextDrop) nextDrop = t + 2;
     step();
     draw();
     raf = requestAnimationFrame(frame);
@@ -474,12 +474,12 @@
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   build();
   if (reduced) {
-    pend = [simW * 0.5, simH * 0.7, 0.45];
+    pend = [simW * 0.5, simH * 0.7, 0.14];
     for (var w = 0; w < 300; w++) step();
     draw();
   } else {
     window.addEventListener('pointermove', function (e) {
-      ptr.x = e.clientX / 2; ptr.y = simH - e.clientY / 2; ptr.on = true;
+      ptr.x = e.clientX / 1.5; ptr.y = simH - e.clientY / 1.5; ptr.on = true;
     });
     window.addEventListener('pointerleave', function () { ptr.on = false; });
     document.addEventListener('visibilitychange', function () {
