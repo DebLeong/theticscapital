@@ -350,9 +350,9 @@
     + '  vec2 c = texture(src, v).rg;\n'
     + '  float lap = texture(src,v+vec2(texel.x,0.)).r + texture(src,v-vec2(texel.x,0.)).r\n'
     + '           + texture(src,v+vec2(0.,texel.y)).r + texture(src,v-vec2(0.,texel.y)).r - 4.*c.r;\n'
-    + '  float hn = (2.*c.r - c.g + 0.25*lap) * 0.995;\n'
+    + '  float hn = (2.*c.r - c.g + 0.25*lap) * 0.992;\n'
     + '  vec2 px = v / texel;\n'
-    + '  if (drop.z != 0.) hn += drop.z * exp(-dot(px - drop.xy, px - drop.xy) / 9.);\n'
+    + '  if (drop.z != 0.) hn += drop.z * exp(-dot(px - drop.xy, px - drop.xy) / 81.);\n'
     + '  if (wake.z != 0.) hn += wake.z * exp(-dot(px - wake.xy, px - wake.xy) / 9.);\n'
     + '  o = vec2(hn, c.r);\n'
     + '}';
@@ -366,10 +366,8 @@
     + '  vec3 n = normalize(vec3(-g * 40., 1.));\n'
     + '  vec3 L = normalize(vec3(-0.35, -0.55, 1.));\n'
     + '  float spec = pow(max(dot(n, L), 0.), 40.) * 0.6;\n'
-    + '  float fres = smoothstep(0.02, 0.09, gm);\n'
-    + '  vec3 col = mix(vec3(0.16,0.47,0.55), vec3(0.75,0.96,1.0), spec)\n'
-    + '         + vec3(167.,139.,250.)/255. * fres * 0.35;\n'
-    + '  float a = smoothstep(0.002, 0.03, gm) * 0.9;\n'
+    + '  vec3 col = mix(vec3(0.40,0.82,0.90), vec3(0.85,0.98,1.0), spec);\n'
+    + '  float a = smoothstep(0.006, 0.02, gm) * 0.85;\n'
     + '  o = vec4(min(col, vec3(1.)), a);\n'
     + '}';
 
@@ -461,7 +459,7 @@
     if (t >= nextDrop) {
       var x, y, tries = 0;
       do { x = Math.random() * simW; y = Math.random() * simH; } while (!outsideHeadline(x, y) && ++tries < 20);
-      pend = [x, y, 0.8];
+      pend = [x, y, 0.45];
       nextDrop = t + 7 + Math.random() * 4;
     }
     step();
@@ -476,7 +474,7 @@
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   build();
   if (reduced) {
-    pend = [simW * 0.5, simH * 0.7, 0.8];
+    pend = [simW * 0.5, simH * 0.7, 0.45];
     for (var w = 0; w < 300; w++) step();
     draw();
   } else {

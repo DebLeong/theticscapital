@@ -271,8 +271,9 @@
     if (u < 0.70) mag = { r: 0.6, a: 0.35, halo: 0 };
     else if (u < 0.95) mag = { r: 0.9, a: 0.55, halo: 0 };
     else mag = { r: 1.6, a: 0.85, halo: 4 };
+    var cap = Math.acos(1 - rnd() * (1 - Math.cos(75 * D2R))) / D2R;   // uniform over the visible cap, theta<=75deg
     stars.push({
-      ra: rnd() * 360, dec: Math.asin(2 * rnd() - 1) / D2R,
+      ra: rnd() * 360, dec: 90 - cap,
       r: mag.r, a: mag.a, halo: mag.halo,
       col: rnd() < 0.08 ? '#DDD6FE' : '#CFFAFE',
       ph: rnd() * Math.PI * 2, per: 3 + rnd() * 4
@@ -297,11 +298,12 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  var SC = 0;                      // px per stereographic rho unit
-  function rho(decDeg) { return 2 * Math.tan(Math.PI / 4 - decDeg * D2R / 2); }
+  var S = 0;                       // px per unit tan(theta/2); set so 60deg from the pole = 0.9*H
+  function ringR(thetaDeg) { return S * Math.tan(thetaDeg * D2R / 2); }
   var PX = 0, PY = 0;              // pole px
   function proj(raDeg, decDeg, th) {
-    var a = (raDeg + th * 360) * D2R, r = rho(decDeg) * SC;
+    var theta = (90 - decDeg);                       // angular distance from the pole
+    var a = (raDeg + th * 360) * D2R, r = S * Math.tan(theta * D2R / 2);
     return [PX + r * Math.sin(a), PY - r * Math.cos(a)];
   }
   function fade(x, y) {            // 70% alpha cut inside 220px of the headline centre
@@ -314,7 +316,7 @@
     var t = reduced ? 0.6 * 240 / (2 * Math.PI) : tms / 1000;
     var th = t * 2 * Math.PI / 240 / (2 * Math.PI);   // full turns
     ctx.clearRect(0, 0, W, H);
-    PX = W * 0.5; PY = H * 0.17; SC = 0.22 * Math.min(W, H);
+    PX = W * 0.5; PY = H * 0.17; S = 0.9 * H / Math.tan(30 * D2R);
     var tx = (W / 2 - ptr.x) * 10 / (W / 2), ty = (H / 2 - ptr.y) * 10 / (H / 2);
     if (!reduced) { ox += (tx - ox) * 0.06; oy += (ty - oy) * 0.06; }
     ctx.save(); ctx.translate(ox, oy);
@@ -330,22 +332,20 @@
       if (dash) ctx.setLineDash([]);
     }
     // declination circles every 15 deg
-    for (var dd = 75; dd >= -75; dd -= 15) {
-      var R = rho(dd) * SC;
-      if (R > Math.max(W, H) * 1.6) continue;
+    for (var dd = 15; dd <= 75; dd += 15) {
       var ring = [];
-      for (var s = 0; s <= 96; s++) ring.push(proj(s * 360 / 96 - th * 360, dd, th));
+      for (var s = 0; s <= 96; s++) ring.push(proj(s * 360 / 96 - th * 360, 90 - dd, th));
       pline(ring, 0.17);
     }
     // hour-circle meridians every 30 deg, beyond 60px from the pole
     for (var hr = 0; hr < 360; hr += 30) {
       var seg = [];
       for (var s2 = 0; s2 <= 60; s2++) {
-        var p2 = proj(hr, 90 - s2 * 3.0, th);
+        var p2 = proj(hr, 90 - Math.min(s2 * 3.0, 170), th);
         var dd2 = Math.hypot(p2[0] - PX, p2[1] - PY);
         if (dd2 < 60) { if (seg.length > 1) pline(seg, 0.12); seg = []; continue; }
         seg.push(p2);
-        if (dd2 > Math.max(W, H)) break;
+        if (dd2 > Math.max(W, H) * 0.75) break;
       }
       if (seg.length > 1) pline(seg, 0.12);
     }
@@ -360,7 +360,7 @@
     }
     pline(ecl, 0.4, [6, 8]);
     // precession ring: 23.4 deg around the pole
-    var RR = rho(90 - 23.4) * SC;
+    var RR = ringR(23.4);
     ctx.beginPath(); ctx.arc(PX, PY, RR, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(103,232,249,0.5)'; ctx.stroke();
     // ring labels, rotating with the sky
@@ -377,6 +377,7 @@
     // stars
     for (var si = 0; si < stars.length; si++) {
       var st = stars[si];
+      if (90 - st.dec > 75) continue;
       var ps = proj(st.ra, st.dec, th);
       if (ps[0] < -20 || ps[0] > W + 20 || ps[1] < -20 || ps[1] > H + 20) continue;
       var a2 = Math.min(1, st.a * 2.4 * (1 + 0.12 * Math.sin(2 * Math.PI * t / st.per + st.ph))) * fade(ps[0], ps[1]);
@@ -407,6 +408,17 @@
     ctx.fillStyle = '#F8FAFC';
     ctx.beginPath(); ctx.arc(PX, PY, 2, 0, 7); ctx.fill();
     ctx.restore();
+    if (!window.__chartDbg) {
+      window.__chartDbg = 1;
+      var inF = 0;
+      for (var di = 0; di < stars.length; di++) {
+        if (90 - stars[di].dec > 75) continue;
+        var pp = proj(stars[di].ra, stars[di].dec, th);
+        if (pp[0] >= 0 && pp[0] <= W && pp[1] >= 0 && pp[1] <= H) inF++;
+      }
+      console.info('chart: stars in frame ' + inF + '/420 · decl rings 15/30/45/60 = ' +
+        [15, 30, 45, 60].map(function (d) { return Math.round(ringR(d)); }).join('/') + 'px');
+    }
     if (!reduced) raf = requestAnimationFrame(frame);
   }
 
