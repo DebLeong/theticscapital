@@ -80,7 +80,7 @@
     mask-composite: intersect;
     -webkit-mask-composite: source-in;
   }
-  #rd.ready { opacity: .5; }
+  #rd.ready { opacity: .55; }
   #field { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
   .vignette {
@@ -455,17 +455,15 @@ window.__RD_OK = (function () {
     + '  o = clamp(vec2(A,B), 0., 1.);\n'
     + '}';
   var SEED_FS = '#version 300 es\nprecision highp float;\n'
-    + 'uniform vec2 res; uniform float markScale; uniform vec2 markCenter; uniform float ringR; uniform vec2 discs[12]; uniform float discR[12];\n'
+    + 'uniform vec2 res; uniform float markScale; uniform vec2 markCenter; uniform vec2 discs[12]; uniform float discR[12];\n'
     + 'out vec2 o;\n'
     + 'void main(){\n'
     + '  vec2 t = (gl_FragCoord.xy - markCenter) / markScale + vec2(20.,20.);\n'
-    + '  float sw = 3.5 / markScale;\n'
+    + '  float sw = 2.5 / markScale;\n'
     + '  float m = 9.;\n'
     + '  if (t.x >= 20.) m = min(abs(distance(t,vec2(20.,20.))-15.), abs(distance(t,vec2(20.,20.))-9.));\n'
     + '  if (abs(t.y-20.) < sw && t.x > 8. && t.x < 11.) m = 0.;\n'
     + '  float B = (m < sw) ? 1. : 0.;\n'
-    + '  vec2 d = gl_FragCoord.xy - markCenter;\n'
-    + '  if (abs(length(d) - ringR) < 1.5 && mod((atan(d.y, d.x) + 3.14159265) * ringR, 12.) < 6.) B = 1.;\n'
     + '  for (int i=0;i<12;i++) if (distance(gl_FragCoord.xy, discs[i]) < discR[i]) B = 1.;\n'
     + '  o = vec2(1., B);\n'
     + '}';
@@ -475,10 +473,11 @@ window.__RD_OK = (function () {
     + '  float b = texture(src, v).g;\n'
     + '  float e = length(vec2(dFdx(b), dFdy(b)));\n'
     + '  vec3 col; float a;\n'
-    + '  if (b < 0.16) { col = vec3(0.); a = 0.; }\n'
-    + '  else if (b < 0.30) { float t=(b-0.16)/0.14; col = vec3(103.,232.,249.)/255.; a = 0.45*t; }\n'
-    + '  else if (b < 0.55) { float t=(b-0.30)/0.25; col = mix(vec3(103.,232.,249.)/255., vec3(190.,245.,255.)/255., t); a = 0.45+0.25*t; }\n'
-    + '  else { float t=min((b-0.55)/0.45,1.); col = mix(vec3(190.,245.,255.)/255., vec3(167.,139.,250.)/255., t); a = 0.7; }\n'
+    + '  if (b < 0.08) { col = vec3(0.); a = 0.; }\n'
+    + '  else if (b < 0.25) { col = vec3(76.,29.,149.)/255.; a = 0.55*(b-0.08)/0.17; }\n'
+    + '  else if (b < 0.45) { col = vec3(167.,139.,250.)/255.; a = 0.6; }\n'
+    + '  else if (b < 0.7)  { col = vec3(103.,232.,249.)/255.; a = 0.75; }\n'
+    + '  else { float t = min((b-0.7)/0.3, 1.); col = mix(vec3(103.,232.,249.)/255., vec3(248.,250.,252.)/255., t); a = 0.95; }\n'
     + '  col += vec3(0.9,1.,1.) * smoothstep(0.02, 0.12, e) * 0.6;\n'
     + '  o = vec4(min(col, vec3(1.)), a);\n'
     + '}';
@@ -499,7 +498,7 @@ window.__RD_OK = (function () {
 
   var stepP, seedP, drawP, simW = 0, simH = 0, fb = [], tex = [], src = 0;
   var ptr = { x: -1e9, y: -1e9, on: false };
-  var steps = 12, timer = null, frameN = 0, frameMs = 0;
+  var steps = 10, timer = null, frameN = 0, frameMs = 0;
 
   function target() {
     var t = gl.createTexture();
@@ -534,12 +533,10 @@ window.__RD_OK = (function () {
                  Math.random() * simH);
       radii.push(3 + Math.random() * 2);
     }
-    gl.disable(gl.BLEND);
     gl.useProgram(seedP);
     gl.uniform2f(gl.getUniformLocation(seedP, 'res'), simW, simH);
     gl.uniform1f(gl.getUniformLocation(seedP, 'markScale'), markScale);
     gl.uniform2f(gl.getUniformLocation(seedP, 'markCenter'), simW / 2, simH / 2);
-    gl.uniform1f(gl.getUniformLocation(seedP, 'ringR'), 0.11 * simH);
     gl.uniform2fv(gl.getUniformLocation(seedP, 'discs'), discs);
     gl.uniform1fv(gl.getUniformLocation(seedP, 'discR'), radii);
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb[src].f);
@@ -549,7 +546,6 @@ window.__RD_OK = (function () {
 
   function step(inject) {
     var dst = 1 - src;
-    gl.disable(gl.BLEND);                       // sim passes must overwrite, never alpha-blend (RG16F has no alpha -> writes die)
     gl.useProgram(stepP);
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb[dst].f);
     gl.viewport(0, 0, simW, simH);
@@ -571,7 +567,6 @@ window.__RD_OK = (function () {
   }
 
   function draw() {
-    gl.enable(gl.BLEND);                        // straight alpha over the backdrop; sim passes write unblended
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.useProgram(drawP);
@@ -598,9 +593,10 @@ window.__RD_OK = (function () {
   try { stepP = prog(STEP_FS); seedP = prog(SEED_FS); drawP = prog(DRAW_FS); }
   catch (e) { canvas.remove(); window.__RD_OK = false; console.warn('rd fallback:', e.message); return; }
 
-  window.__rd = { f: 0.0545, k: 0.062 };      // coral — a branching labyrinth that grows fingers out of the seed; tune live
+  window.__rd = { f: 0.0367, k: 0.0649 };     // mitosis — cells split and crawl; tune live from the console
   gl.disable(gl.DEPTH_TEST);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);   // blending belongs to the screen pass ONLY — enabled in draw()
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   build();
   if (reduced) {
@@ -608,8 +604,6 @@ window.__RD_OK = (function () {
     draw();
     canvas.classList.add('ready');
   } else {
-    for (var w = 0; w < 400; w++) step(false);          // warm-up: the mark already has buds when the layer fades in
-    draw();
     window.addEventListener('pointermove', function (e) {
       ptr.x = e.clientX / 2.5; ptr.y = simH - e.clientY / 2.5; ptr.on = true;
     });
