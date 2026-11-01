@@ -68,19 +68,6 @@
   }
   #julia.ready { opacity: .22; animation: breathe 46s ease-in-out infinite alternate; }
   @keyframes breathe { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.07) rotate(1.4deg); } }
-  #rd {
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    width: 100%; height: 100%;
-    opacity: 0;
-    transition: opacity 1.5s ease;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, transparent 30%, rgba(0,0,0,.95) 68%),
-                linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, transparent 30%, rgba(0,0,0,.95) 68%),
-                linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
-    mask-composite: intersect;
-    -webkit-mask-composite: source-in;
-  }
-  #rd.ready { opacity: .55; }
   #field { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
   .vignette {
@@ -232,7 +219,6 @@
 </head>
 <body>
   <div class="grid-floor" aria-hidden="true"></div>
-  <canvas id="rd" aria-hidden="true"></canvas>
   <canvas id="julia" aria-hidden="true"></canvas>
   <canvas id="field" aria-hidden="true"></canvas>
   <div class="vignette" aria-hidden="true"></div>
@@ -260,17 +246,6 @@
   </main>
 
 <script>
-/* Feature probe before everything else: the reaction-diffusion layer needs WebGL2 + a renderable
-   float buffer. When it can't run, __RD_OK stays false and the Julia layer renders as the fallback. */
-window.__RD_OK = (function () {
-  try {
-    var c = document.createElement('canvas');
-    var g = c.getContext('webgl2');
-    return !!(g && (g.getExtension('EXT_color_buffer_float') || g.getExtension('EXT_color_buffer_half_float')));
-  } catch (e) { return false; }
-})();
-</script>
-<script>
 (function () {
   var canvas = document.getElementById('field');
   var ctx = canvas.getContext('2d');
@@ -287,7 +262,7 @@ window.__RD_OK = (function () {
   }
 
   function seed() {
-    var n = Math.round(Math.min(180, Math.max(120, Math.round(W * H / 14000))) * (window.__RD_OK ? 0.6 : 1));
+    var n = Math.min(180, Math.max(120, Math.round(W * H / 14000)));
     pts = [];
     for (var i = 0; i < n; i++) {
       pts.push({
@@ -357,7 +332,6 @@ window.__RD_OK = (function () {
    is a transform, not a re-render; the per-frame raster never showed the filaments). */
 (function () {
   var canvas = document.getElementById('julia');
-  if (window.__RD_OK) { canvas.style.display = 'none'; return; }   // the reaction-diffusion layer replaces this visually
   var ctx = canvas.getContext('2d');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var CX = -0.7269, CY = 0.1889;              // dendritic filaments
@@ -423,199 +397,6 @@ window.__RD_OK = (function () {
 
   if (reduced) canvas.style.animation = 'none';
   queue();
-})();
-
-/* The gut — a Gray–Scott reaction-diffusion field on WebGL2, seeded along the monogram so the
-   pattern visibly grows out of the mark (plus discs at the edges). Replaces the Julia canvas when
-   the GPU path is available; the Julia stays the fallback for everything else. */
-(function () {
-  var canvas = document.getElementById('rd');
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!window.__RD_OK) { canvas.remove(); return; }
-  var gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: false, antialias: false });
-  if (!gl || !(gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float'))) {
-    canvas.remove(); window.__RD_OK = false; return;
-  }
-
-  var VS = '#version 300 es\nout vec2 v; void main(){ vec2 p=vec2(float((gl_VertexID<<1)&2), float(gl_VertexID&2)); v=p; gl_Position=vec4(p*2.-1.,0.,1.); }';
-  var STEP_FS = '#version 300 es\nprecision highp float; precision highp sampler2D;\n'
-    + 'uniform sampler2D src; uniform vec2 texel; uniform float f,k,injStr,injR; uniform vec2 injPos;\n'
-    + 'in vec2 v; out vec2 o;\n'
-    + 'void main(){\n'
-    + '  vec2 c = texture(src, v).rg;\n'
-    + '  vec2 lap = -c\n'
-    + '    + 0.2*(texture(src, v+vec2(texel.x,0.)).rg + texture(src, v-vec2(texel.x,0.)).rg\n'
-    + '          + texture(src, v+vec2(0.,texel.y)).rg + texture(src, v-vec2(0.,texel.y)).rg)\n'
-    + '    + 0.05*(texture(src, v+texel).rg + texture(src, v-texel).rg\n'
-    + '           + texture(src, v+vec2(texel.x,-texel.y)).rg + texture(src, v+vec2(-texel.x,texel.y)).rg);\n'
-    + '  float A=c.r, B=c.g, r=A*B*B;\n'
-    + '  A += (1.0*lap.x - r + f*(1.-A));\n'
-    + '  B += (0.5*lap.y + r - (f+k)*B);\n'
-    + '  if (injStr > 0.) { vec2 d = v/texel - injPos; B += injStr*exp(-dot(d,d)/(injR*injR)); }\n'
-    + '  o = clamp(vec2(A,B), 0., 1.);\n'
-    + '}';
-  var SEED_FS = '#version 300 es\nprecision highp float;\n'
-    + 'uniform vec2 res; uniform float markScale; uniform vec2 markCenter; uniform vec2 discs[12]; uniform float discR[12];\n'
-    + 'out vec2 o;\n'
-    + 'void main(){\n'
-    + '  vec2 t = (gl_FragCoord.xy - markCenter) / markScale + vec2(20.,20.);\n'
-    + '  float sw = 2.5 / markScale;\n'
-    + '  float m = 9.;\n'
-    + '  if (t.x >= 20.) m = min(abs(distance(t,vec2(20.,20.))-15.), abs(distance(t,vec2(20.,20.))-9.));\n'
-    + '  if (abs(t.y-20.) < sw && t.x > 8. && t.x < 11.) m = 0.;\n'
-    + '  float B = (m < sw) ? 1. : 0.;\n'
-    + '  for (int i=0;i<12;i++) if (distance(gl_FragCoord.xy, discs[i]) < discR[i]) B = 1.;\n'
-    + '  o = vec2(1., B);\n'
-    + '}';
-  var DRAW_FS = '#version 300 es\nprecision highp float; precision highp sampler2D;\n'
-    + 'uniform sampler2D src; in vec2 v; out vec4 o;\n'
-    + 'void main(){\n'
-    + '  float b = texture(src, v).g;\n'
-    + '  float e = length(vec2(dFdx(b), dFdy(b)));\n'
-    + '  vec3 col; float a;\n'
-    + '  if (b < 0.08) { col = vec3(0.); a = 0.; }\n'
-    + '  else if (b < 0.25) { col = vec3(76.,29.,149.)/255.; a = 0.55*(b-0.08)/0.17; }\n'
-    + '  else if (b < 0.45) { col = vec3(167.,139.,250.)/255.; a = 0.6; }\n'
-    + '  else if (b < 0.7)  { col = vec3(103.,232.,249.)/255.; a = 0.75; }\n'
-    + '  else { float t = min((b-0.7)/0.3, 1.); col = mix(vec3(103.,232.,249.)/255., vec3(248.,250.,252.)/255., t); a = 0.95; }\n'
-    + '  col += vec3(0.9,1.,1.) * smoothstep(0.02, 0.12, e) * 0.6;\n'
-    + '  o = vec4(min(col, vec3(1.)), a);\n'
-    + '}';
-
-  function shader(type, src) {
-    var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error('shader: ' + gl.getShaderInfoLog(s));
-    return s;
-  }
-  function prog(fs) {
-    var p = gl.createProgram();
-    gl.attachShader(p, shader(gl.VERTEX_SHADER, VS));
-    gl.attachShader(p, shader(gl.FRAGMENT_SHADER, fs));
-    gl.linkProgram(p);
-    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error('link: ' + gl.getProgramInfoLog(p));
-    return p;
-  }
-
-  var stepP, seedP, drawP, simW = 0, simH = 0, fb = [], tex = [], src = 0;
-  var ptr = { x: -1e9, y: -1e9, on: false };
-  var steps = 10, timer = null, frameN = 0, frameMs = 0;
-
-  function target() {
-    var t = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, t);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG16F, simW, simH, 0, gl.RG, gl.HALF_FLOAT, null);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    var fbo = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
-    return { t: t, f: fbo };
-  }
-
-  function build() {
-    simW = Math.min(720, Math.ceil(window.innerWidth / 2.5));
-    simH = Math.ceil(window.innerHeight / 2.5);
-    canvas.width = Math.ceil(window.innerWidth * Math.min(window.devicePixelRatio || 1, 2));
-    canvas.height = Math.ceil(window.innerHeight * Math.min(window.devicePixelRatio || 1, 2));
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    fb.forEach(function (o) { gl.deleteFramebuffer(o.f); });
-    tex.forEach(function (t) { gl.deleteTexture(t); });
-    fb = [target(), target()]; tex = [fb[0].t, fb[1].t]; src = 0;
-    // seed: the mark (~26% of viewport height) centred at viewport centre, + ~12 discs in the outer 40%
-    var markScale = 0.26 * simH / 30;                       // mark spans 30 units (y 5..35) of 40-space
-    var discs = [], radii = [];
-    for (var i = 0; i < 12; i++) {
-      var edge = Math.random() < 0.5;
-      discs.push(edge ? Math.random() * simW : (Math.random() < 0.5 ? Math.random() * simW * 0.2 : simW * (0.8 + Math.random() * 0.2)),
-                 Math.random() * simH);
-      radii.push(3 + Math.random() * 2);
-    }
-    gl.useProgram(seedP);
-    gl.uniform2f(gl.getUniformLocation(seedP, 'res'), simW, simH);
-    gl.uniform1f(gl.getUniformLocation(seedP, 'markScale'), markScale);
-    gl.uniform2f(gl.getUniformLocation(seedP, 'markCenter'), simW / 2, simH / 2);
-    gl.uniform2fv(gl.getUniformLocation(seedP, 'discs'), discs);
-    gl.uniform1fv(gl.getUniformLocation(seedP, 'discR'), radii);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb[src].f);
-    gl.viewport(0, 0, simW, simH);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  }
-
-  function step(inject) {
-    var dst = 1 - src;
-    gl.useProgram(stepP);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fb[dst].f);
-    gl.viewport(0, 0, simW, simH);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, tex[src]);
-    gl.uniform1i(gl.getUniformLocation(stepP, 'src'), 0);
-    gl.uniform2f(gl.getUniformLocation(stepP, 'texel'), 1 / simW, 1 / simH);
-    gl.uniform1f(gl.getUniformLocation(stepP, 'f'), window.__rd.f);
-    gl.uniform1f(gl.getUniformLocation(stepP, 'k'), window.__rd.k);
-    if (inject) {
-      gl.uniform1f(gl.getUniformLocation(stepP, 'injStr'), 0.35);
-      gl.uniform1f(gl.getUniformLocation(stepP, 'injR'), 14);
-      gl.uniform2f(gl.getUniformLocation(stepP, 'injPos'), ptr.x, ptr.y);
-    } else {
-      gl.uniform1f(gl.getUniformLocation(stepP, 'injStr'), 0);
-    }
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    src = dst;
-  }
-
-  function draw() {
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.useProgram(drawP);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, tex[src]);
-    gl.uniform1i(gl.getUniformLocation(drawP, 'src'), 0);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  }
-
-  function frame() {
-    var t0 = performance.now();
-    step(ptr.on && !reduced);
-    for (var i = 1; i < steps; i++) step(false);
-    draw();
-    frameMs += performance.now() - t0;
-    if (++frameN === 120) {
-      var avg = frameMs / 120;
-      console.info('rd frame:', avg.toFixed(1) + 'ms @' + simW + 'x' + simH + ' x' + steps + ' steps');
-      if (avg > 10 && steps > 6) { steps = 6; console.info('rd: steps -> 6'); }
-    }
-    timer = requestAnimationFrame(frame);
-  }
-
-  try { stepP = prog(STEP_FS); seedP = prog(SEED_FS); drawP = prog(DRAW_FS); }
-  catch (e) { canvas.remove(); window.__RD_OK = false; console.warn('rd fallback:', e.message); return; }
-
-  window.__rd = { f: 0.0367, k: 0.0649 };     // mitosis — cells split and crawl; tune live from the console
-  gl.disable(gl.DEPTH_TEST);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-  build();
-  if (reduced) {
-    for (var w = 0; w < 1200; w++) step(false);
-    draw();
-    canvas.classList.add('ready');
-  } else {
-    window.addEventListener('pointermove', function (e) {
-      ptr.x = e.clientX / 2.5; ptr.y = simH - e.clientY / 2.5; ptr.on = true;
-    });
-    window.addEventListener('pointerleave', function () { ptr.on = false; });
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden && timer) { cancelAnimationFrame(timer); timer = null; }
-      else if (!document.hidden && !timer) timer = requestAnimationFrame(frame);
-    });
-    canvas.classList.add('ready');
-    timer = requestAnimationFrame(frame);
-  }
-  window.addEventListener('resize', build);
 })();
 </script>
 </body>
