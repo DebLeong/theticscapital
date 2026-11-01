@@ -1,452 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thetics Capital - The AI Hedge Fund That Actually Reads</title>
-  <meta name="description" content="Most AI funds trade on price patterns. We read every 10-K, 10-Q, and 8-K filing. Fundamental analysis at machine scale.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thetics Capital — Human judgment. Machine reading.</title>
+<meta name="description" content="Clara Compass™ by Thetics Capital: fundamental investing in the age of AI. Every filing, every footnote, every call — read, verified, and shown with its evidence.">
+<meta name="theme-color" content="#05070B">
+<meta property="og:title" content="Thetics Capital — Human judgment. Machine reading.">
+<meta property="og:description" content="Clara Compass™ by Thetics Capital: fundamental investing in the age of AI. Every filing, every footnote, every call — read, verified, and shown with its evidence.">
+<meta property="og:site_name" content="Thetics Capital">
+<meta property="og:type" content="website">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05070B;
+    --ink: #F8FAFC;
+    --mut: #94A3B8;
+    --dim: #64748B;
+    --faint: #475569;
+    --cyan: #67E8F9;
+    --violet: #A78BFA;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    min-height: 100svh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (max-height: 640px) { body { overflow: auto; } }
 
-  <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="Thetics Capital - The AI Hedge Fund That Actually Reads">
-  <meta property="og:description" content="Most AI funds trade on price patterns. We read every 10-K, 10-Q, and 8-K filing.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://theticscapital.com">
+  /* ---- layers, back to front ---- */
+  .grid-floor {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 38vh;
+    z-index: 0; pointer-events: none;
+    transform: perspective(600px) rotateX(62deg);
+    transform-origin: bottom center;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(103,232,249,0.10) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(0deg,  rgba(103,232,249,0.10) 0 1px, transparent 1px 48px);
+    mask-image: linear-gradient(to top, rgba(0,0,0,.9), transparent);
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.9), transparent);
+    animation: gridDrift 14s linear infinite;
+  }
+  @keyframes gridDrift { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 0 48px; } }
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" href="/favicon.ico">
+  #julia {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    width: 100%; height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    transform-origin: 50% 45%;
+    will-change: transform;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, transparent 30%, rgba(0,0,0,.95) 68%),
+                linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, transparent 0%, transparent 30%, rgba(0,0,0,.95) 68%),
+                linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
+  }
+  #julia.ready { opacity: .22; animation: breathe 46s ease-in-out infinite alternate; }
+  @keyframes breathe { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.07) rotate(1.4deg); } }
+  #field { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  .vignette {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(103,232,249,0.08), transparent 55%),
+      radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55));
+  }
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  /* ---- HUD ---- */
+  .hud {
+    position: fixed; z-index: 4;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--dim);
+  }
+  .hud.tl { top: 28px; left: 28px; }
+  .hud.tr { top: 28px; right: 28px; display: flex; align-items: center; gap: 10px; }
+  .hud.bl { bottom: 28px; left: 28px; }
+  .hud.br { bottom: 28px; right: 28px; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #34D399; display: inline-block;
+    animation: halo 2.4s ease-out infinite;
+  }
+  @keyframes halo {
+    0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.5); }
+    70%  { box-shadow: 0 0 0 8px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+  }
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  /* ---- hero ---- */
+  main {
+    position: relative; z-index: 3;
+    min-height: 100svh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    transform: translateY(-4vh);
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .mark { position: relative; width: 96px; height: 96px; }
+  .mark svg { display: block; width: 96px; height: 96px; }
+  .mark::before {
+    content: ""; position: absolute; inset: 0;
+    border: 1px solid rgba(103,232,249,.45);
+    border-radius: 50%;
+    animation: ping 5s ease-out 1s infinite;
+    pointer-events: none;
+  }
+  @keyframes ping {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
 
-  <style>
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+  .eyebrow {
+    margin-top: 40px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px; letter-spacing: .3em; text-transform: uppercase;
+    color: rgba(103,232,249,.8);
+  }
+  h1 {
+    margin-top: 16px;
+    font-size: clamp(44px, 7.4vw, 104px);
+    line-height: 1.02;
+    font-weight: 400;
+  }
+  h1 .h {
+    display: block;
+    font-family: "Instrument Serif", Georgia, serif;
+    font-style: italic; font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  h1 .m {
+    display: block;
+    font-family: "Inter", -apple-system, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    background: linear-gradient(90deg, #67E8F9 0%, #A78BFA 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+  .sub {
+    margin-top: 28px;
+    font-size: clamp(16px, 1.5vw, 20px);
+    font-weight: 400;
+    color: var(--mut);
+    max-width: 46ch;
+    line-height: 1.55;
+  }
+  .cta {
+    margin-top: 40px;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 32px;
+    font-size: 15px; font-weight: 500; letter-spacing: .02em;
+    color: var(--ink); text-decoration: none;
+    border: 1px solid rgba(103,232,249,.55);
+    border-radius: 999px;
+    background: rgba(103,232,249,.06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background 200ms ease, box-shadow 200ms ease;
+  }
+  .cta span { transition: transform 200ms ease; }
+  .cta:hover, .cta:focus-visible {
+    background: rgba(103,232,249,.14);
+    box-shadow: 0 0 0 1px rgba(103,232,249,.6), 0 0 48px rgba(103,232,249,.28);
+    outline: none;
+  }
+  .cta:hover span, .cta:focus-visible span { transform: translateX(4px); }
+  .access {
+    margin-top: 14px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px; letter-spacing: .22em;
+    color: var(--faint);
+  }
 
-    html {
-      scroll-behavior: smooth;
-    }
+  /* ---- entrance ---- */
+  .rise { opacity: 0; transform: translateY(14px); animation: rise .9s cubic-bezier(.2,.7,.2,1) forwards; }
+  .rise:nth-child(1) { animation-delay: 0ms; }
+  .rise:nth-child(2) { animation-delay: 90ms; }
+  .rise:nth-child(3) { animation-delay: 180ms; }
+  .rise:nth-child(4) { animation-delay: 270ms; }
+  .rise:nth-child(5) { animation-delay: 360ms; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
 
-    /* Serif for headings - editorial feel */
-    h1, h2, h3 {
-      font-family: 'Crimson Pro', Georgia, serif;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
+  /* ---- responsive ---- */
+  @media (max-width: 640px) {
+    .hud { font-size: 10px; }
+    .hud.tl { top: 20px; left: 20px; }
+    .hud.tr { top: 20px; right: 20px; }
+    .hud.bl { bottom: 20px; left: 20px; }
+    .hud.br { display: none; }
+    main { padding: 24px; }
+    .mark, .mark svg { width: 72px; height: 72px; }
+    h1 { font-size: clamp(34px, 10.4vw, 60px); }
+    h1 .h, h1 .m { white-space: nowrap; }
+    .sub { font-size: 16px; }
+    .cta { width: 100%; max-width: 320px; justify-content: center; }
+  }
 
-    /* Refined body text */
-    p {
-      letter-spacing: -0.01em;
-    }
-
-    /* Minimalist icon styling */
-    i[data-lucide] {
-      stroke-width: 1.5;
-    }
-
-    /* Quote rotation animation */
-    #rotatingQuote {
-      transition: opacity 0.8s ease-in-out;
-    }
-
-    #rotatingQuote.fade {
-      opacity: 0;
-    }
-  </style>
+  @media (prefers-reduced-motion: reduce) {
+    .grid-floor, .dot, .mark::before, .rise { animation: none; }
+    .rise { opacity: 1; transform: none; }
+  }
+</style>
 </head>
-<body class="min-h-screen bg-white text-gray-900">
+<body>
+  <div class="grid-floor" aria-hidden="true"></div>
+  <canvas id="julia" aria-hidden="true"></canvas>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
 
-  <!-- Navigation -->
-  <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 z-50">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="text-xl font-semibold tracking-tight">
-        Thetics Capital
-      </div>
-      <a
-        href="#waitlist"
-        class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-      >
-        Join Waitlist
-      </a>
+  <div class="hud tl">THETICS CAPITAL</div>
+  <div class="hud tr">CLARA COMPASS&trade; &middot; <span class="dot" aria-hidden="true"></span> ONLINE</div>
+  <div class="hud bl">&copy; 2026 THETICS CAPITAL</div>
+  <div class="hud br">EVERY NUMBER VERIFIED AGAINST THE FILING</div>
+
+  <main>
+    <div class="mark rise" aria-hidden="true">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 20 5 A 15 15 0 0 1 20 35" stroke="#F8FAFC" stroke-width="2.4" fill="none" stroke-linecap="butt"/>
+        <path d="M 20 11 A 9 9 0 0 1 20 29" stroke="#F8FAFC" stroke-width="2.4" fill="none" stroke-linecap="butt"/>
+        <line x1="8" y1="20" x2="11" y2="20" stroke="#F8FAFC" stroke-width="1.8"/>
+      </svg>
     </div>
-  </nav>
-
-  <!-- Hero Section -->
-  <section class="pt-48 pb-40 px-6">
-    <div class="max-w-5xl mx-auto text-center">
-      <h1 class="text-7xl md:text-[10rem] mb-10 leading-[1.05]">
-        The AI hedge fund<br>
-        <span class="text-gray-500">that actually reads.</span>
-      </h1>
-
-      <p class="text-xl md:text-2xl text-gray-600 mb-16 max-w-2xl mx-auto leading-[1.6]">
-        Every filing. Every footnote. Every company. So you know which ones are actually worth owning.
-      </p>
-
-      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <a
-          href="#waitlist"
-          class="px-10 py-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-all"
-        >
-          Join Waitlist
-        </a>
-        <a
-          href="#how-it-works"
-          class="px-10 py-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:border-black hover:bg-gray-50 transition-all"
-        >
-          How It Works
-        </a>
-      </div>
+    <div class="eyebrow rise">FUNDAMENTAL INVESTING IN THE AGE OF AI</div>
+    <h1 class="rise"><span class="h">Human judgment.</span><span class="m">Machine reading.</span></h1>
+    <p class="sub rise">Clara Compass reads every filing, every footnote and every earnings call — and shows you the evidence behind each number. The judgment stays yours.</p>
+    <div class="rise">
+      <a class="cta" href="https://compass.theticscapital.com/guest">Enter the Desk <span aria-hidden="true">&rarr;</span></a>
+      <div class="access">ACCESS BY INVITATION</div>
     </div>
-  </section>
+  </main>
 
-  <!-- Why Thetics -->
-  <section class="py-40 px-6 bg-gray-50">
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-4xl md:text-5xl mb-16 text-center">
-        Why "Thetics"?
-      </h2>
+<script>
+(function () {
+  var canvas = document.getElementById('field');
+  var ctx = canvas.getContext('2d');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, dpr = 1, pts = [], raf = null;
+  var mouse = { x: -1e9, y: -1e9 };
 
-      <div class="space-y-10 text-lg text-gray-700 leading-[1.8]">
-        <p>
-          Take <em class="italic text-gray-900 font-normal">aesthetics</em>. Strip away the obvious. <strong class="font-semibold text-gray-900">What's left is us.</strong>
-        </p>
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
 
-        <p>
-          <strong class="font-semibold text-gray-900">Taste and thesis.</strong> Conviction and craft. The eye that sees what others miss, powered by a mind that never stops reading.
-        </p>
-
-        <p>
-          Where the aesthetic meets the synthetic.
-        </p>
-
-        <p class="text-xl text-gray-900 font-normal pt-4">
-          That's Thetics.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Problem Section -->
-  <section class="py-40 px-6">
-    <div class="max-w-5xl mx-auto">
-      <div class="text-center mb-24">
-        <h2 class="text-4xl md:text-5xl mb-6">
-          The Problem with AI Investing
-        </h2>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-[1.6]">
-          Today's AI funds are sophisticated calculators, not readers
-        </p>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-12">
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="trending-up" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-3">Quant Funds</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Optimized for speed and short-term patterns. Built for milliseconds, not years.
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="bot" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-3">Sentiment Analysis</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Tracks market sentiment and news flow. Different signals, different time horizons.
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="briefcase" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-3">Traditional Analysis</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Deep, careful reading. But 20-30 companies is the human limit.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Solution Section -->
-  <section class="py-40 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-4xl md:text-5xl mb-8">
-        We do the homework no one else can
-      </h2>
-      <p class="text-xl text-gray-600 mb-24 max-w-2xl mx-auto leading-[1.7]">
-        Our AI reads every word of every SEC filing for 500+ companies.
-        Then it invests with the conviction of a fundamental analyst.
-      </p>
-
-      <div class="space-y-16 text-left max-w-2xl mx-auto">
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0 w-10 h-10 border-2 border-black rounded-full flex items-center justify-center font-semibold text-sm">
-            1
-          </div>
-          <div>
-            <h3 class="font-semibold text-xl mb-3">Deep Reading</h3>
-            <p class="text-gray-500 font-light leading-relaxed">
-              Extract KPIs, risks, and management commentary from MD&A sections. Track 18+ XBRL concepts across 10 years.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0 w-10 h-10 border-2 border-black rounded-full flex items-center justify-center font-semibold text-sm">
-            2
-          </div>
-          <div>
-            <h3 class="font-semibold text-xl mb-3">Pattern Detection</h3>
-            <p class="text-gray-500 font-light leading-relaxed">
-              Identify gaps between risk factors and MD&A. Track insider transactions. Monitor disclosure changes.
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-start gap-6">
-          <div class="flex-shrink-0 w-10 h-10 border-2 border-black rounded-full flex items-center justify-center font-semibold text-sm">
-            3
-          </div>
-          <div>
-            <h3 class="font-semibold text-xl mb-3">Conviction Investing</h3>
-            <p class="text-gray-500 font-light leading-relaxed">
-              Pick 20-30 high-conviction stocks based on fundamental quality, not momentum. Hold for years, not minutes.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section id="how-it-works" class="py-40 px-6">
-    <div class="max-w-4xl mx-auto">
-      <h2 class="text-4xl md:text-5xl text-center mb-24">
-        Our Unfair Advantage
-      </h2>
-
-      <div class="grid md:grid-cols-2 gap-16">
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="database" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-4">Complete SEC Filing Database</h3>
-          <p class="text-gray-500 font-light leading-relaxed">
-            Every 10-K, 10-Q, 8-K, and DEF 14A for the S&P 500. XBRL data + raw HTML + AI extraction.
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="brain" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-4">Custom-Trained LLMs</h3>
-          <p class="text-gray-500 font-light leading-relaxed">
-            Fine-tuned to extract KPIs, detect red flags, and identify tone shifts. Temperature = 0.0 for strict grounding.
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="network" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-4">Graph RAG Architecture</h3>
-          <p class="text-gray-500 font-light leading-relaxed">
-            Connect companies through supply chains, board members, investors, and peers.
-          </p>
-        </div>
-
-        <div class="text-center">
-          <div class="mb-6 flex justify-center"><i data-lucide="zap" class="w-12 h-12 text-gray-300"></i></div>
-          <h3 class="text-xl font-semibold mb-4">Real-Time Monitoring</h3>
-          <p class="text-gray-500 font-light leading-relaxed">
-            New filing? We read it within hours and update our thesis instantly.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Stats & Social Proof -->
-  <section class="py-40 px-6 bg-gray-50">
-    <div class="max-w-5xl mx-auto">
-      <!-- Stats -->
-      <div class="grid md:grid-cols-3 gap-20 text-center mb-32">
-        <div>
-          <div class="text-6xl mb-4" style="font-family: 'Crimson Pro', serif;">500+</div>
-          <div class="text-gray-600 text-sm uppercase tracking-wider">Companies Indexed</div>
-        </div>
-        <div>
-          <div class="text-6xl mb-4" style="font-family: 'Crimson Pro', serif;">4,500+</div>
-          <div class="text-gray-600 text-sm uppercase tracking-wider">SEC Filings Read</div>
-        </div>
-        <div>
-          <div class="text-6xl mb-4" style="font-family: 'Crimson Pro', serif;">10yr</div>
-          <div class="text-gray-600 text-sm uppercase tracking-wider">Historical Depth</div>
-        </div>
-      </div>
-
-      <!-- Social Proof -->
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-4xl md:text-5xl mb-8">
-          Built by investors, for investors
-        </h2>
-        <p class="text-xl text-gray-600 mb-20 max-w-2xl mx-auto leading-[1.7]">
-          We're not a team of quants who've never read a 10-K. We're fundamental analysts who got tired of manually reading 200-page filings.
-        </p>
-
-        <div class="bg-white rounded-2xl p-12 border-l-4 border-black max-w-2xl mx-auto">
-          <div class="text-6xl text-gray-300 mb-4 leading-none" style="font-family: Georgia, serif;">"</div>
-          <p id="rotatingQuote" class="text-gray-800 text-2xl italic leading-[1.6] mb-8" style="font-family: 'Crimson Pro', serif;">
-          </p>
-          <div class="text-sm tracking-wider uppercase text-gray-500">— Founding Team</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Waitlist -->
-  <section id="waitlist" class="py-40 px-6">
-    <div class="max-w-xl mx-auto text-center">
-      <h2 class="text-4xl md:text-5xl mb-8">
-        Join the Waitlist
-      </h2>
-      <p class="text-xl text-gray-600 mb-12 leading-[1.7]">
-        Launching Q2 2026. Early members get priority access.
-      </p>
-
-      <form id="waitlistForm" action="https://formspree.io/f/xykdzzgy" method="POST" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-        <input
-          type="email"
-          name="email"
-          id="emailInput"
-          placeholder="your@email.com"
-          required
-          class="flex-1 px-6 py-4 border border-gray-300 rounded-lg focus:outline-none focus:border-black transition-colors"
-        />
-        <button
-          type="submit"
-          class="px-10 py-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-all"
-        >
-          Join
-        </button>
-      </form>
-
-      <p id="successMessage" class="mt-6 text-green-600 font-medium hidden">
-        ✓ You're on the list
-      </p>
-
-      <p class="mt-8 text-sm text-gray-400 font-light">
-        No spam. Unsubscribe anytime.
-      </p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="border-t border-gray-100 py-16 px-6">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-      <div class="text-sm text-gray-400 font-light">
-        © 2026 Thetics Capital
-      </div>
-      <div class="flex gap-8 text-sm text-gray-400 font-light">
-        <a href="#" class="hover:text-black transition-colors">Privacy</a>
-        <a href="#" class="hover:text-black transition-colors">Terms</a>
-        <a href="mailto:hello@theticscapital.com" class="hover:text-black transition-colors">
-          Contact
-        </a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // Initialize Lucide icons
-    lucide.createIcons();
-
-    // Rotating quotes with animation
-    const quotes = [
-      "A human analyst covers 20 companies. Ours covers 500 and never sleeps.",
-      "Reading between the lines used to take a career. Now it takes seconds.",
-      "Deep analysis used to require decades of experience. Now it requires AI.",
-      "You shouldn't need a team of analysts to know which companies are actually good.",
-      "Wall Street reads the filings. Now you can too."
-    ];
-
-    let currentQuoteIndex = 0;
-    const quoteElement = document.getElementById('rotatingQuote');
-
-    function rotateQuote() {
-      // Fade out
-      quoteElement.classList.add('fade');
-
-      setTimeout(() => {
-        // Change text
-        currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
-        quoteElement.textContent = quotes[currentQuoteIndex];
-
-        // Fade in
-        quoteElement.classList.remove('fade');
-      }, 800); // Match CSS transition duration
+  function seed() {
+    var n = Math.min(180, Math.max(120, Math.round(W * H / 14000)));
+    pts = [];
+    for (var i = 0; i < n; i++) {
+      pts.push({
+        x: Math.random() * W, y: Math.random() * H,
+        r: 0.6 + Math.random() * 0.8,
+        a: 0.25 + Math.random() * 0.45,
+        vx: (0.05 + Math.random() * 0.13) * (Math.random() < 0.5 ? -1 : 1),
+        vy: (0.05 + Math.random() * 0.13) * (Math.random() < 0.5 ? -1 : 1)
+      });
     }
+  }
 
-    // Set initial quote
-    quoteElement.textContent = quotes[0];
-
-    // Rotate every 5 seconds
-    setInterval(rotateQuote, 5000);
-
-    // Waitlist form handling with Formspree
-    document.getElementById('waitlistForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const email = document.getElementById('emailInput').value;
-      const successMessage = document.getElementById('successMessage');
-      const submitButton = form.querySelector('button[type="submit"]');
-
-      // Disable button during submission
-      submitButton.disabled = true;
-      submitButton.textContent = 'Joining...';
-
-      try {
-        const response = await fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          // Show success message
-          successMessage.classList.remove('hidden');
-
-          // Clear form
-          document.getElementById('emailInput').value = '';
-
-          // Reset button
-          submitButton.textContent = 'Join';
-          submitButton.disabled = false;
-
-          // Hide success message after 5 seconds
-          setTimeout(() => {
-            successMessage.classList.add('hidden');
-          }, 5000);
-        } else {
-          throw new Error('Form submission failed');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Something went wrong. Please try again.');
-        submitButton.textContent = 'Join';
-        submitButton.disabled = false;
+  function frame(move) {
+    ctx.clearRect(0, 0, W, H);
+    var i, j, p, q, d, dx, dy;
+    for (i = 0; i < pts.length; i++) {
+      p = pts[i];
+      if (move) {
+        dx = p.x - mouse.x; dy = p.y - mouse.y;
+        d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 160 && d > 0.001) { p.x += dx / d * 0.6; p.y += dy / d * 0.6; }
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < -4) p.x = W + 4; else if (p.x > W + 4) p.x = -4;
+        if (p.y < -4) p.y = H + 4; else if (p.y > H + 4) p.y = -4;
       }
-    });
-  </script>
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, 6.2832);
+      ctx.fillStyle = 'rgba(103,232,249,' + p.a.toFixed(2) + ')';
+      ctx.fill();
+    }
+    ctx.lineWidth = 1;
+    for (i = 0; i < pts.length; i++) {
+      p = pts[i];
+      for (j = i + 1; j < pts.length; j++) {
+        q = pts[j];
+        dx = p.x - q.x; dy = p.y - q.y;
+        d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 110) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = 'rgba(103,232,249,' + (0.12 * (1 - d / 110)).toFixed(3) + ')';
+          ctx.stroke();
+        }
+      }
+    }
+  }
 
+  function loop() {
+    frame(true);
+    raf = requestAnimationFrame(loop);
+  }
+  function start() { if (!raf && !document.hidden) raf = requestAnimationFrame(loop); }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+  window.addEventListener('resize', function () { size(); seed(); if (reduced) frame(false); });
+  window.addEventListener('pointermove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('pointerleave', function () { mouse.x = -1e9; mouse.y = -1e9; });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stop(); else if (!reduced) start();
+  });
+
+  size(); seed();
+  if (reduced) frame(false); else start();
+})();
+
+/* Julia set — ONE full-resolution render at load, then CSS-only motion (the breathe
+   is a transform, not a re-render; the per-frame raster never showed the filaments). */
+(function () {
+  var canvas = document.getElementById('julia');
+  var ctx = canvas.getContext('2d');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CX = -0.7269, CY = 0.1889;              // dendritic filaments
+  var MAX = 260;
+  var w = 0, h = 0, img = null, buf = null;
+  var ALPHA = new Uint8Array(256);            // 255 * v^2.2, hoisted
+  for (var ai = 0; ai < 256; ai++) ALPHA[ai] = Math.pow(ai / 255, 2.2) * 255;
+
+  function size() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    w = Math.ceil(window.innerWidth * dpr);
+    h = Math.ceil(window.innerHeight * dpr);
+    canvas.width = w; canvas.height = h;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    img = ctx.createImageData(w, h);
+    buf = new Uint32Array(img.data.buffer);
+  }
+
+  function render() {
+    var t0 = performance.now();
+    var halfH = 0.62, halfW = halfH * w / h, VC = 0.30, VI = 0.22, i = 0;
+    for (var py = 0; py < h; py++) {
+      var im0 = VI + halfH * (1 - 2 * py / h);
+      for (var px = 0; px < w; px++, i++) {
+        var zx = VC - halfW + 2 * halfW * px / w, zy = im0, n = 0, m2 = 0;
+        while (n < MAX) {
+          var x2 = zx * zx, y2 = zy * zy;
+          m2 = x2 + y2;
+          if (m2 > 256) break;
+          zy = 2 * zx * zy + CY;
+          zx = x2 - y2 + CX;
+          n++;
+        }
+        if (n >= MAX) { buf[i] = 0; continue; }
+        var smooth = n + 1 - Math.log(Math.log(m2) / 2) / Math.LN2;
+        var v = smooth / 60; if (v < 0) v = 0; else if (v > 1) v = 1;
+        var a = ALPHA[(v * 255) | 0];
+        if (!a) { buf[i] = 0; continue; }
+        var r, g, b;
+        if (v <= 0.80) { r = 103; g = 232; b = 249; }
+        else { var k = (v - 0.80) / 0.20; r = 103 + 64 * k; g = 232 - 93 * k; b = 249 + k; }
+        buf[i] = (a << 24) | ((b | 0) << 16) | ((g | 0) << 8) | (r | 0);
+      }
+    }
+    var tLoop = performance.now();
+    ctx.putImageData(img, 0, 0);
+    canvas.classList.add('ready');
+    console.info('julia render:', (tLoop - t0).toFixed(1) + 'ms loop + ' + (performance.now() - tLoop).toFixed(1) + 'ms blit @' + w + 'x' + h);
+  }
+
+  function queue() {
+    size();
+    canvas.classList.remove('ready');
+    setTimeout(render, 0);                    // after first paint — never blocks the entrance
+  }
+
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(queue, 300);
+  });
+
+  if (reduced) canvas.style.animation = 'none';
+  queue();
+})();
+</script>
 </body>
 </html>
