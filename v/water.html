@@ -366,10 +366,10 @@
     + '  vec3 n = normalize(vec3(-g * 40., 1.));\n'
     + '  vec3 L = normalize(vec3(-0.35, -0.55, 1.));\n'
     + '  float spec = pow(max(dot(n, L), 0.), 40.) * 0.6;\n'
-    + '  vec3 col = spec * vec3(190.,245.,255.)/255.;\n'
-    + '  col += vec3(167.,139.,250.)/255. * smoothstep(0.02, 0.09, gm) * 0.35;\n'
-    + '  float a = smoothstep(0.002, 0.03, gm) * 0.85;\n'
-    + '  a = max(a, spec * 0.5);\n'
+    + '  float fres = smoothstep(0.02, 0.09, gm);\n'
+    + '  vec3 col = mix(vec3(0.16,0.47,0.55), vec3(0.75,0.96,1.0), spec)\n'
+    + '         + vec3(167.,139.,250.)/255. * fres * 0.35;\n'
+    + '  float a = smoothstep(0.002, 0.03, gm) * 0.9;\n'
     + '  o = vec4(min(col, vec3(1.)), a);\n'
     + '}';
 
